@@ -1,0 +1,21 @@
+server:
+  hostname: localhost
+  port: 8080
+
+spring:
+  application:
+    name: movie
+  datasource:
+    url: jdbc:postgresql://localhost:5432/blog_db
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+
+jwt:
+  secret: hits2025hits2025hits2025hits2025hits2025hits2025hits2025hits
+  access-lifetime: 15m
+  refresh-lifetime: 7d
