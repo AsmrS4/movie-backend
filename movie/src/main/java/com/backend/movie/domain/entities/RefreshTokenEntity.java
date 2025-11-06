@@ -1,13 +1,17 @@
 package com.backend.movie.domain.entities;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "refresh_tokens")
 @Builder
-@Table(name = "refresh-tokens")
 public class RefreshTokenEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

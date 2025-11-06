@@ -16,6 +16,6 @@ spring:
       ddl-auto: update
 
 jwt:
-  secret: hits2025hits2025hits2025hits2025hits2025
+  secret: hits2025hits2025hits2025hits2025hits2025hits2025hits2025hits
   access-lifetime: 15m
   refresh-lifetime: 7d

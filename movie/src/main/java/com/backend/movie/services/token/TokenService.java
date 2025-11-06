@@ -11,6 +11,8 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotNull;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -22,9 +24,11 @@ import java.util.Date;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
+@Slf4j
 public class TokenService {
-    private TokenRepository tokenRepository;
-    private RefreshTokenRepository refreshTokenRepository;
+    private final TokenRepository tokenRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
     @Value("${jwt.secret}")
     private String SECRET_KEY;
     @Value("${jwt.access-lifetime}")
@@ -32,41 +36,41 @@ public class TokenService {
     @Value("${jwt.refresh-lifetime}")
     private Duration REFRESH_LIFETIME;
     @Transactional(rollbackOn = {Exception.class})
-    public TokenPairResponse getTokenPair(UserDetails userDetails) {
-        String accessToken = generateToken(userDetails, ACCESS_LIFETIME);
-        String refreshToken = generateToken(userDetails, REFRESH_LIFETIME);
+    public TokenPairResponse getTokenPair(UserEntity userEntity) {
+        String accessToken = generateToken(userEntity, ACCESS_LIFETIME);
+        String refreshToken = generateToken(userEntity, REFRESH_LIFETIME);
         try {
             deleteRefreshToken(null);
-            saveRefresh(refreshToken, userDetails);
+            saveRefresh(refreshToken, userEntity);
             return new TokenPairResponse(accessToken, refreshToken);
         } catch (Exception ex) {
-            throw new RuntimeException("Что-то пошло не так");
+            throw new RuntimeException(ex);
         }
     }
 
     @Transactional(rollbackOn = {Exception.class})
-    public TokenPairResponse getNewTokenPair(UserDetails userDetails, String prevToken) {
-        String newAccessToken = generateToken(userDetails, ACCESS_LIFETIME);
-        String newRefreshToken = generateNewRefreshTokenByOldRefresh(userDetails, prevToken);
+    public TokenPairResponse getNewTokenPair(UserEntity userEntity, String prevToken) {
+        String newAccessToken = generateToken(userEntity, ACCESS_LIFETIME);
+        String newRefreshToken = generateNewRefreshTokenByOldRefresh(userEntity, prevToken);
         try {
             deleteRefreshToken(prevToken);
-            saveRefresh(newRefreshToken, userDetails);
+            saveRefresh(newRefreshToken, userEntity);
             return new TokenPairResponse(newAccessToken, newRefreshToken);
         } catch (Exception ex) {
-            throw new RuntimeException("Что-то пошло не так");
+            throw new RuntimeException(ex);
         }
     }
 
-    private String generateNewRefreshTokenByOldRefresh(UserDetails userDetails, String prevRefreshToken) {
-        RefreshTokenEntity refreshToken = refreshTokenRepository
+    private String generateNewRefreshTokenByOldRefresh(UserEntity userEntity, String prevRefreshToken) {
+        refreshTokenRepository
                 .findByToken(prevRefreshToken)
                 .orElseThrow(
                         () -> new CustomJwtException("Токен не найден")
                 );
-        if(!isTokenValid(userDetails, prevRefreshToken)) {
+        if(!isTokenValid(userEntity, prevRefreshToken)) {
             throw new CustomJwtException("Невалидный токен");
         }
-        return generateToken(userDetails, REFRESH_LIFETIME);
+        return generateToken(userEntity, REFRESH_LIFETIME);
     }
 
     public boolean isTokenValid(UserDetails userDetails, String token) {
@@ -78,15 +82,22 @@ public class TokenService {
     private void deleteRefreshToken(String prevRefreshToken) {
         refreshTokenRepository
                 .findByToken(prevRefreshToken)
-                .ifPresent(refreshToken -> refreshTokenRepository.delete(refreshToken));
+                .ifPresent(refreshTokenRepository::delete);
     }
 
-    private void saveRefresh(String newRefreshToken, UserDetails userDetails) {
-        RefreshTokenEntity refreshToken = RefreshTokenEntity.builder()
-                .token(newRefreshToken)
-                .user((UserEntity) userDetails)
-                .build();
-        refreshTokenRepository.save(refreshToken);
+    private void saveRefresh(String newRefreshToken, UserEntity userEntity) {
+        RefreshTokenEntity prevRefresh = refreshTokenRepository
+                .findByUser(userEntity).orElse(null);
+        if(prevRefresh == null) {
+            RefreshTokenEntity refreshToken = RefreshTokenEntity.builder()
+                    .token(newRefreshToken)
+                    .user(userEntity)
+                    .build();
+            refreshTokenRepository.save(refreshToken);
+        } else {
+            prevRefresh.setToken(newRefreshToken);
+            refreshTokenRepository.save(prevRefresh);
+        }
     }
 
     private boolean isTokenExpired(String token) {
@@ -94,13 +105,14 @@ public class TokenService {
         return expirationDate.before(new Date());
     }
 
-    private String generateToken(UserDetails userDetails, Duration lifeTime) {
+    private String generateToken(UserEntity userEntity, Duration lifeTime) {
         Date issuedAt = new Date();
         Date expiredAt = new Date(issuedAt.getTime() + lifeTime.toMillis());
         return Jwts.builder()
                 .setIssuedAt(issuedAt)
                 .setExpiration(expiredAt)
-                .setId(userDetails.getUsername())
+                .setId(String.valueOf(userEntity.getId()))
+                .setSubject(userEntity.getLogin())
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
                 .compact();
     }
@@ -117,7 +129,7 @@ public class TokenService {
         try {
             return Jwts.parser()
                     .setSigningKey(SECRET_KEY)
-                    .parseClaimsJwt(token)
+                    .parseClaimsJws(token)
                     .getBody();
         } catch (Exception ex) {
             throw new CustomJwtException(ex.getMessage());
