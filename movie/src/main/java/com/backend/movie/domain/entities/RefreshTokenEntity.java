@@ -1,10 +1,12 @@
 package com.backend.movie.domain.entities;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Data;
 
 @Data
 @Entity
+@Builder
 @Table(name = "refresh-tokens")
 public class RefreshTokenEntity {
     @Id
