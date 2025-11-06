@@ -10,9 +10,9 @@ import org.apache.coyote.BadRequestException;
 import java.util.UUID;
 
 public interface UserService {
-    User getUserProfile(UUID userId);
-    User editUserProfile(UUID userId, EditProfileRequest request) throws BadRequestException;
+    User getUserProfile();
+    User editUserProfile(EditProfileRequest request) throws BadRequestException;
     boolean existByLogin(String login);
-    void changePassword(PasswordChangeRequest request);
+    boolean changePassword(PasswordChangeRequest request) throws BadRequestException;
     UserEntity save(RegisterRequest request) throws BadRequestException;
 }
