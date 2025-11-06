@@ -1,0 +1,13 @@
+package com.backend.movie.services.movie;
+
+import com.backend.movie.domain.filter.CatalogueFilter;
+import com.backend.movie.domain.models.Movie;
+import org.springframework.data.domain.Pageable;
+
+import java.util.List;
+import java.util.UUID;
+
+public interface MovieService {
+    Movie getMovieDetails(UUID movieId);
+    List<Movie> getCatalogue(CatalogueFilter filter,  Pageable pageable);
+}
