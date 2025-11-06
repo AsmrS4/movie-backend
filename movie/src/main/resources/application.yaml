@@ -1,0 +1,12 @@
+server:
+  hostname: localhost
+  port: 8080
+
+spring:
+  application:
+    name: movie
+
+jwt:
+  secret: hits2025hits2025hits2025hits2025hits2025
+  access-lifetime: 15m
+  refresh-lifetime: 7d

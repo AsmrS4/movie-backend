@@ -20,7 +20,6 @@ public class AuthController {
     public ResponseEntity<?> logoutUser() {
         return ResponseEntity.ok(null);
     }
-
     @PostMapping("/refresh")
     public ResponseEntity<?> refreshSession() {
         return ResponseEntity.ok(null);
