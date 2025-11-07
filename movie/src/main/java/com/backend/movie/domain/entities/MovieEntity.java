@@ -1,34 +1,31 @@
 package com.backend.movie.domain.entities;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
 @Data
 @Entity
+@ToString(exclude = "genres")
 @Table(name = "movies")
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
 public class MovieEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID movieId;
     private String title;
     private String description;
-    private int year;
+    private int filmYear;
     private String country;
+    @Column(length = 2000)
     private String imageUrl;
-    private int time;
+    private int lasting;
     private int ageLimit;
-    private int budget;
-    private int fees;
+    private String budget;
+    private String fees;
     private String actors;
     private String director;
     @ManyToMany
@@ -37,5 +34,6 @@ public class MovieEntity {
             joinColumns = @JoinColumn(name = "movie_id"),
             inverseJoinColumns = @JoinColumn(name = "genre_id")
     )
-    private Set<GenreEntity> genres = new HashSet<>();
+    private List<GenreEntity> genres;
+
 }
