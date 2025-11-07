@@ -1,8 +1,7 @@
 package com.backend.movie.services.auth;
 
-import com.backend.movie.dao.users.UserRepository;
+import com.backend.movie.dao.UserRepository;
 import com.backend.movie.domain.entities.UserEntity;
-import com.backend.movie.domain.models.User;
 import com.backend.movie.domain.requests.LoginRequest;
 import com.backend.movie.domain.requests.RefreshRequest;
 import com.backend.movie.domain.requests.RegisterRequest;
@@ -10,11 +9,9 @@ import com.backend.movie.domain.response.AuthResponse;
 import com.backend.movie.domain.response.TokenPairResponse;
 import com.backend.movie.mappers.UserMapper;
 import com.backend.movie.services.token.TokenService;
-import com.backend.movie.services.users.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
