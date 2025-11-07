@@ -1,7 +1,7 @@
 package com.backend.movie.services.token;
 
-import com.backend.movie.dao.auth.RefreshTokenRepository;
-import com.backend.movie.dao.auth.TokenRepository;
+import com.backend.movie.dao.RefreshTokenRepository;
+import com.backend.movie.dao.TokenRepository;
 import com.backend.movie.domain.entities.RefreshTokenEntity;
 import com.backend.movie.domain.entities.UserEntity;
 import com.backend.movie.domain.response.TokenPairResponse;
@@ -17,11 +17,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import java.sql.Ref;
 import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.Date;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor

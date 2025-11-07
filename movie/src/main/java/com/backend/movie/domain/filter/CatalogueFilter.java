@@ -9,6 +9,7 @@ import lombok.Data;
 public class CatalogueFilter {
     private String search;
     private String director;
+    private String country;
     private int minYear;
     private int maxYear;
     private int minAgeLimit;

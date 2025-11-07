@@ -1,6 +1,6 @@
 package com.backend.movie.services.users;
 
-import com.backend.movie.dao.users.UserRepository;
+import com.backend.movie.dao.UserRepository;
 import com.backend.movie.domain.entities.UserEntity;
 import com.backend.movie.domain.models.User;
 import com.backend.movie.domain.requests.EditProfileRequest;
@@ -14,7 +14,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.Objects;
 import java.util.UUID;

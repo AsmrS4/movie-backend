@@ -2,6 +2,7 @@ package com.backend.movie.domain.models;
 
 import lombok.Data;
 
+import java.util.Set;
 import java.util.UUID;
 
 @Data
@@ -18,4 +19,5 @@ public class Movie {
     private int fees;
     private String actors;
     private String director;
+    private Set<Genre> genres;
 }

@@ -33,6 +33,7 @@ public class MovieController {
     public ResponseEntity<?> getCatalogue(
             @RequestParam(required = false) String search,
             @RequestParam(required = false) String director,
+            @RequestParam(required = false) String country,
             @RequestParam(required = false) @Validated @Positive(message = "Значение должно быть больше нуля") int minYear,
             @RequestParam(required = false) @Validated @Positive(message = "Значение должно быть больше нуля") int maxYear,
             @RequestParam(required = false) @Validated @Positive(message = "Значение должно быть больше нуля") int minAgeLimit,
@@ -41,7 +42,7 @@ public class MovieController {
             @RequestParam(required = false, defaultValue = "1") @Validated @Min(value = 1 , message = "Минимальное значение 1") int page,
             @RequestParam(required = false, defaultValue = "10") @Validated @Min(value = 1 , message = "Минимальное значение 1") int size
             ) {
-        CatalogueFilter filter = new CatalogueFilter(search, director, minYear, maxYear, minAgeLimit, maxAgeLimit, sortBy);
+        CatalogueFilter filter = new CatalogueFilter(search, director, country, minYear, maxYear, minAgeLimit, maxAgeLimit, sortBy);
         Pageable pageable = PageRequest.of(page, size);
         return ResponseEntity.ok(movieService.getCatalogue(filter, pageable));
     }
@@ -54,5 +55,16 @@ public class MovieController {
     public ResponseEntity<?> getMovieDetails(@PathVariable UUID movieId) {
         return ResponseEntity.ok(movieService.getMovieDetails(movieId));
     }
-
+    @GetMapping("/catalogue/directors")
+    public ResponseEntity<?> getDirectors() {
+        return ResponseEntity.ok(movieService.getMovieDirectors());
+    }
+    @GetMapping("/catalogue/countries")
+    public ResponseEntity<?> getCountries() {
+        return ResponseEntity.ok(movieService.getMovieCountries());
+    }
+    @GetMapping("/catalogue/genres")
+    public ResponseEntity<?> getGenres() {
+        return ResponseEntity.ok(movieService.getAvailableMovieGenres());
+    }
 }

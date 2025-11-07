@@ -1,4 +1,4 @@
-package com.backend.movie.dao.users;
+package com.backend.movie.dao;
 
 import com.backend.movie.domain.entities.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
