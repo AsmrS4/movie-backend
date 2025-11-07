@@ -14,8 +14,8 @@ public interface MovieService {
     Movie getMovieDetails(UUID movieId);
     List<Movie> getCatalogue(CatalogueFilter filter,  Pageable pageable);
 
-    List<String> getMovieDirectors();
+    Set<String> getMovieDirectors();
 
-    List<String> getMovieCountries();
-    Set<Genre> getAvailableMovieGenres();
+    Set<String> getMovieCountries();
+    List<Genre> getAvailableMovieGenres();
 }
