@@ -1,6 +1,7 @@
 package com.backend.movie.handler;
 
 import com.backend.movie.exceptions.CustomJwtException;
+import com.backend.movie.exceptions.UnauthorizedException;
 import io.swagger.v3.oas.annotations.Hidden;
 import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
@@ -37,6 +38,13 @@ public class GlobalExceptionHandler {
         errors.put("status: ", HttpStatus.BAD_REQUEST.value());
         errors.put("error: ", ex.getMessage());
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler(UnauthorizedException.class)
+    ResponseEntity<Map<String, Object>> handleUnauthorizedException(UnauthorizedException ex) {
+        Map<String, Object> errors = new HashMap<>();
+        errors.put("status: ", HttpStatus.UNAUTHORIZED.value());
+        errors.put("error: ", ex.getMessage());
+        return new ResponseEntity<>(errors, HttpStatus.UNAUTHORIZED);
     }
     @ExceptionHandler(MethodArgumentNotValidException.class)
     ResponseEntity<Map<String, Object>> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {

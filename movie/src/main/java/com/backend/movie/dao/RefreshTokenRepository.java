@@ -1,4 +1,4 @@
-package com.backend.movie.dao.auth;
+package com.backend.movie.dao;
 
 import com.backend.movie.domain.entities.RefreshTokenEntity;
 import com.backend.movie.domain.entities.UserEntity;
