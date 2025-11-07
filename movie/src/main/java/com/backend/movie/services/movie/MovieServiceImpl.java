@@ -3,6 +3,7 @@ package com.backend.movie.services.movie;
 import com.backend.movie.dao.GenreRepository;
 import com.backend.movie.dao.MovieRepository;
 import com.backend.movie.domain.entities.GenreEntity;
+import com.backend.movie.domain.entities.MovieEntity;
 import com.backend.movie.domain.filter.CatalogueFilter;
 import com.backend.movie.domain.models.Genre;
 import com.backend.movie.domain.models.Movie;
@@ -10,6 +11,7 @@ import com.backend.movie.mappers.MovieMapper;
 import org.springframework.data.domain.Pageable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.webjars.NotFoundException;
 
 import java.util.List;
 import java.util.Set;
@@ -32,27 +34,35 @@ public class MovieServiceImpl implements MovieService{
     }
     @Override
     public Movie getMovieDetails(UUID movieId) {
-        return null;
+        MovieEntity movieEntity = repository.findById(movieId).orElseThrow(
+                () -> new NotFoundException("Фильм не найден")
+        );
+        List<GenreEntity> genres = genreRepository.findAllByMovie(movieId);
+        movieEntity.setGenres(genres);
+        return movieMapper.toMovie(movieEntity);
     }
 
     @Override
     public List<Movie> getCatalogue(CatalogueFilter filter, Pageable pageable) {
-        return null;
+        List<MovieEntity> movieEntities = repository.findAll();
+        return movieEntities.stream().map(
+                movieMapper::toMovie
+        ).collect(Collectors.toList());
     }
 
     @Override
-    public List<String> getMovieDirectors() {
-        return null;
+    public Set<String> getMovieDirectors() {
+        return repository.findAllDirectors();
     }
 
     @Override
-    public List<String> getMovieCountries() {
-        return null;
+    public Set<String> getMovieCountries() {
+        return repository.findAllCountries();
     }
 
     @Override
-    public Set<Genre> getAvailableMovieGenres() {
-        Set<GenreEntity> genres = (Set<GenreEntity>) genreRepository.findAll();
-        return genres.stream().map(movieMapper::toGenre).collect(Collectors.toSet());
+    public List<Genre> getAvailableMovieGenres() {
+        List<GenreEntity> genres = genreRepository.findAll();
+        return genres.stream().map(movieMapper::toGenre).collect(Collectors.toList());
     }
 }
