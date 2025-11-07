@@ -11,10 +11,6 @@ public class CatalogueFilter {
     @Nullable
     private String search;
     @Nullable
-    private String director;
-    @Nullable
-    private String country;
-    @Nullable
     private Integer minYear;
     @Nullable
     private Integer maxYear;
