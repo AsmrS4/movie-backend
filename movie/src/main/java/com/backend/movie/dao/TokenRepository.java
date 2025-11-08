@@ -1,4 +1,4 @@
-package com.backend.movie.dao.auth;
+package com.backend.movie.dao;
 
 import com.backend.movie.domain.entities.TokenEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
