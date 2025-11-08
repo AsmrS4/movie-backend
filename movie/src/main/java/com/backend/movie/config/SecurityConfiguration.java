@@ -51,10 +51,12 @@ public class SecurityConfiguration {
                                 "/webjars/**",
                                 "/swagger-ui.html")
                         .permitAll()
-                        .requestMatchers("/api/auth").permitAll()
+                        .requestMatchers("/api/auth/*", "/api/movie/**").permitAll()
                         .requestMatchers(
                                 "/api/auth/logout",
-                                "/api/user/*")
+                                "/api/user/*",
+                                "/api/favourites/*",
+                                "/api/reviews/*")
                         .authenticated()
                         .anyRequest().permitAll()
                 )
