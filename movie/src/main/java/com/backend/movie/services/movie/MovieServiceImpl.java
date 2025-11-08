@@ -7,7 +7,9 @@ import com.backend.movie.domain.entities.MovieEntity;
 import com.backend.movie.domain.filter.CatalogueFilter;
 import com.backend.movie.domain.models.Genre;
 import com.backend.movie.domain.models.Movie;
+import com.backend.movie.helpers.MovieSpecification;
 import com.backend.movie.mappers.MovieMapper;
+import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,21 +45,24 @@ public class MovieServiceImpl implements MovieService{
     }
 
     @Override
-    public List<Movie> getCatalogue(CatalogueFilter filter, Pageable pageable) {
-        List<MovieEntity> movieEntities = repository.findAll();
+    public List<Movie> getCatalogue(CatalogueFilter filter, Pageable pageable) throws BadRequestException {
+        if(filter.getMinYear()!=null && filter.getMaxYear()!=null) {
+            if(filter.getMinYear() > filter.getMaxYear()) {
+                throw new BadRequestException("Минимальное значение года выпуска не должно быть выше максимального");
+            }
+        }
+        if(filter.getMinAgeLimit()!=null && filter.getMaxAgeLimit()!=null) {
+            if(filter.getMinAgeLimit() > filter.getMaxAgeLimit()) {
+                throw new BadRequestException("Минимальное значение возраста не должно быть выше максимального");
+            }
+        }
+        List<MovieEntity> movieEntities = repository.findAll(MovieSpecification.withFilter(filter), pageable);
+        //TODO: в будущем добавить подсчет рейтинга для фильма
+        //TODO: добавить сортировку
+        //TODO: добавить фильтрацию по жанрам
         return movieEntities.stream().map(
                 movieMapper::toMovie
         ).collect(Collectors.toList());
-    }
-
-    @Override
-    public Set<String> getMovieDirectors() {
-        return repository.findAllDirectors();
-    }
-
-    @Override
-    public Set<String> getMovieCountries() {
-        return repository.findAllCountries();
     }
 
     @Override
@@ -65,4 +70,5 @@ public class MovieServiceImpl implements MovieService{
         List<GenreEntity> genres = genreRepository.findAll();
         return genres.stream().map(movieMapper::toGenre).collect(Collectors.toList());
     }
+
 }

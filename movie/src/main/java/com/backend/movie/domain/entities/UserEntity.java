@@ -28,8 +28,6 @@ public class UserEntity implements UserDetails {
     private LocalDateTime createTime = LocalDateTime.now();
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private RefreshTokenEntity refreshToken;
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<TokenEntity> tokens;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
