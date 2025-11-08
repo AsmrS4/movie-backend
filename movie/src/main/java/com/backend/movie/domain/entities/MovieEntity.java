@@ -28,6 +28,7 @@ public class MovieEntity {
     private String fees;
     private String actors;
     private String director;
+
     @ManyToMany
     @JoinTable(
             name = "movie_genres",
@@ -35,5 +36,6 @@ public class MovieEntity {
             inverseJoinColumns = @JoinColumn(name = "genre_id")
     )
     private List<GenreEntity> genres;
-
+    @OneToMany(mappedBy="movie", cascade={CascadeType.ALL}, orphanRemoval=true)
+    private Set<Favourites> favorites;
 }
