@@ -1,7 +1,6 @@
 package com.backend.movie.services.token;
 
 import com.backend.movie.dao.RefreshTokenRepository;
-import com.backend.movie.dao.TokenRepository;
 import com.backend.movie.domain.entities.RefreshTokenEntity;
 import com.backend.movie.domain.entities.UserEntity;
 import com.backend.movie.domain.response.TokenPairResponse;
@@ -24,7 +23,6 @@ import java.util.Date;
 @RequiredArgsConstructor
 @Slf4j
 public class TokenService {
-    private final TokenRepository tokenRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     @Value("${jwt.secret}")
     private String SECRET_KEY;
