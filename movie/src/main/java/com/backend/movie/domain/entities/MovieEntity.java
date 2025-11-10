@@ -23,6 +23,7 @@ public class MovieEntity {
     @Column(length = 2000)
     private String imageUrl;
     private int lasting;
+    private double rating = 0;
     private int ageLimit;
     private String budget;
     private String fees;

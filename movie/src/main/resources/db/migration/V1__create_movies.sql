@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS public.movies
     fees character varying(32),
     image_url character varying(2000),
     lasting integer NOT NULL,
+    rating float NOT NULL DEFAULT 0.0,
     title character varying(100),
     film_year integer NOT NULL
 );
