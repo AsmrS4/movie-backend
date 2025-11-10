@@ -8,6 +8,7 @@ import com.backend.movie.domain.entities.MovieEntity;
 import com.backend.movie.domain.entities.UserEntity;
 import com.backend.movie.domain.models.Movie;
 import com.backend.movie.exceptions.UnauthorizedException;
+import com.backend.movie.helpers.UserContextManager;
 import com.backend.movie.mappers.MovieMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +32,7 @@ public class FavoriteServiceImpl implements FavouriteService{
     private final MovieMapper movieMapper;
     @Override
     public List<Movie> getFavourites() {
-        UserEntity user = getUserFromContext();
+        UserEntity user = UserContextManager.getUserFromContext(userRepository);
         List<MovieEntity> favouriteMovies = favouriteRepository.findFavouriteMovies(user.getId());
         return favouriteMovies.stream().map(movieMapper::toMovie).collect(Collectors.toList());
     }
@@ -42,7 +43,7 @@ public class FavoriteServiceImpl implements FavouriteService{
                 .orElseThrow(
                         () -> new NotFoundException("Фильм не найден")
                 );
-        UserEntity user = getUserFromContext();
+        UserEntity user = UserContextManager.getUserFromContext(userRepository);
 
         save(movie, user);
 
@@ -56,20 +57,11 @@ public class FavoriteServiceImpl implements FavouriteService{
                 .orElseThrow(
                         () -> new NotFoundException("Фильм не найден")
                 );
-        UserEntity user = getUserFromContext();
+        UserEntity user = UserContextManager.getUserFromContext(userRepository);
         favouriteRepository.deleteByUserAndMovie(user, movie);
         return true;
     }
 
-    private UserEntity getUserFromContext() {
-        try {
-            UUID userId = UUID.fromString(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
-            return userRepository.getReferenceById(userId);
-        } catch (Exception ex) {
-            log.error("RECEIVED EXCEPTION: " + ex);
-            throw new UnauthorizedException("Вы не авторизованы");
-        }
-    }
     private void save(MovieEntity movie, UserEntity user) throws BadRequestException {
         Favourites favourites = Favourites.builder()
                 .user(user)
