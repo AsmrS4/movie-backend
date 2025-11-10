@@ -7,6 +7,7 @@ import com.backend.movie.domain.requests.EditProfileRequest;
 import com.backend.movie.domain.requests.PasswordChangeRequest;
 import com.backend.movie.domain.requests.RegisterRequest;
 import com.backend.movie.exceptions.UnauthorizedException;
+import com.backend.movie.helpers.UserContextManager;
 import com.backend.movie.mappers.UserMapper;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.BadRequestException;
@@ -26,13 +27,13 @@ public class UserServiceImpl implements UserService{
     private final UserMapper mapper;
     @Override
     public User getUserProfile() {
-        UserEntity userEntity = getCurrentUser();
+        UserEntity userEntity = UserContextManager.getUserFromContext(userRepository);
         return mapper.toUser(userEntity);
     }
 
     @Override
     public User editUserProfile( EditProfileRequest request) throws BadRequestException {
-        UserEntity userEntity = getCurrentUser();
+        UserEntity userEntity = UserContextManager.getUserFromContext(userRepository);
 
         if(existByLogin(request.getLogin()) && !Objects.equals(userEntity.getLogin(), request.getLogin())) {
             throw new BadRequestException("Логин уже занят");
@@ -49,7 +50,7 @@ public class UserServiceImpl implements UserService{
     }
     @Override
     public boolean changePassword(PasswordChangeRequest request) throws BadRequestException {
-        UserEntity userEntity = getCurrentUser();
+        UserEntity userEntity = UserContextManager.getUserFromContext(userRepository);
         if(!passwordEncoder.matches(request.getPrevPassword(), userEntity.getPassword())) {
             throw new BadRequestException("Неверный пароль");
         }
@@ -72,22 +73,7 @@ public class UserServiceImpl implements UserService{
         return userRepository.save(newUser);
     }
 
-    private UserEntity getCurrentUser() {
-        UUID userId = getUserIdFromContext();
-        if(userId == null) {
-            throw new UnauthorizedException("Вы не авторизованы");
-        }
-        return userRepository.findById(userId).orElseThrow(
-                () -> new UsernameNotFoundException("Пользователь не найден")
-        );
-    }
-    private UUID getUserIdFromContext() {
-        try {
-            return UUID.fromString(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
-        } catch (Exception ex) {
-            return null;
-        }
-    }
+
     private UserEntity saveUser(UserEntity userEntity) {
         return userRepository.save(userEntity);
     }

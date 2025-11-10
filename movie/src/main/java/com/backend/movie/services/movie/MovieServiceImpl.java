@@ -57,7 +57,7 @@ public class MovieServiceImpl implements MovieService{
             }
         }
         List<MovieEntity> movieEntities = repository.findAll(MovieSpecification.withFilter(filter), pageable);
-        //TODO: в будущем добавить подсчет рейтинга для фильма
+        //TODO: в будущем добавить подсчет рейтинга для фильма(через sql)
         //TODO: добавить сортировку
         //TODO: добавить фильтрацию по жанрам
         return movieEntities.stream().map(
