@@ -13,6 +13,14 @@ import java.util.UUID;
 @Tag(name = "Review", description = "Эндпоинты для создания, редактирования и удаления отзывов к фильмам.")
 public class ReviewController {
     @Operation(
+            summary = "Получить отзывы к фильму",
+            description = "В ответе возвращается список отзывов"
+    )
+    @GetMapping("/{movieId}")
+    public ResponseEntity<?> getReviews(@PathVariable UUID movieId) {
+        return ResponseEntity.ok(null);
+    }
+    @Operation(
             summary = "Написать отзыв к фильму",
             description = "В ответе возвращается новый отзыв пользователя."
     )
