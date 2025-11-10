@@ -3,13 +3,17 @@ package com.backend.movie.services.movie;
 import com.backend.movie.dao.GenreRepository;
 import com.backend.movie.dao.MovieRepository;
 import com.backend.movie.domain.entities.GenreEntity;
+import com.backend.movie.domain.entities.MovieEntity;
 import com.backend.movie.domain.filter.CatalogueFilter;
 import com.backend.movie.domain.models.Genre;
 import com.backend.movie.domain.models.Movie;
+import com.backend.movie.helpers.MovieSpecification;
 import com.backend.movie.mappers.MovieMapper;
+import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.webjars.NotFoundException;
 
 import java.util.List;
 import java.util.Set;
@@ -32,27 +36,39 @@ public class MovieServiceImpl implements MovieService{
     }
     @Override
     public Movie getMovieDetails(UUID movieId) {
-        return null;
+        MovieEntity movieEntity = repository.findById(movieId).orElseThrow(
+                () -> new NotFoundException("Фильм не найден")
+        );
+        List<GenreEntity> genres = genreRepository.findAllByMovie(movieId);
+        movieEntity.setGenres(genres);
+        return movieMapper.toMovie(movieEntity);
     }
 
     @Override
-    public List<Movie> getCatalogue(CatalogueFilter filter, Pageable pageable) {
-        return null;
+    public List<Movie> getCatalogue(CatalogueFilter filter, Pageable pageable) throws BadRequestException {
+        if(filter.getMinYear()!=null && filter.getMaxYear()!=null) {
+            if(filter.getMinYear() > filter.getMaxYear()) {
+                throw new BadRequestException("Минимальное значение года выпуска не должно быть выше максимального");
+            }
+        }
+        if(filter.getMinAgeLimit()!=null && filter.getMaxAgeLimit()!=null) {
+            if(filter.getMinAgeLimit() > filter.getMaxAgeLimit()) {
+                throw new BadRequestException("Минимальное значение возраста не должно быть выше максимального");
+            }
+        }
+        List<MovieEntity> movieEntities = repository.findAll(MovieSpecification.withFilter(filter), pageable);
+        //TODO: в будущем добавить подсчет рейтинга для фильма(через sql)
+        //TODO: добавить сортировку
+        //TODO: добавить фильтрацию по жанрам
+        return movieEntities.stream().map(
+                movieMapper::toMovie
+        ).collect(Collectors.toList());
     }
 
     @Override
-    public List<String> getMovieDirectors() {
-        return null;
+    public List<Genre> getAvailableMovieGenres() {
+        List<GenreEntity> genres = genreRepository.findAll();
+        return genres.stream().map(movieMapper::toGenre).collect(Collectors.toList());
     }
 
-    @Override
-    public List<String> getMovieCountries() {
-        return null;
-    }
-
-    @Override
-    public Set<Genre> getAvailableMovieGenres() {
-        Set<GenreEntity> genres = (Set<GenreEntity>) genreRepository.findAll();
-        return genres.stream().map(movieMapper::toGenre).collect(Collectors.toSet());
-    }
 }
