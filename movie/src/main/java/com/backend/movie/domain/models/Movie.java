@@ -20,6 +20,7 @@ public class Movie {
     private String country;
     private String imageUrl;
     private int lasting;
+    private double rating;
     private int ageLimit;
     private String budget;
     private String fees;

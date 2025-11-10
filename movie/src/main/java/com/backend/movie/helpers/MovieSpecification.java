@@ -44,6 +44,7 @@ public class MovieSpecification {
                         filter.getMaxAgeLimit()
                 ));
             }
+            query.orderBy(criteriaBuilder.desc(root.get("filmYear")));
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         });
     }

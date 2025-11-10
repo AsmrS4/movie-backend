@@ -2,6 +2,7 @@ package com.backend.movie.services.movie;
 
 import com.backend.movie.dao.GenreRepository;
 import com.backend.movie.dao.MovieRepository;
+import com.backend.movie.dao.ReviewRepository;
 import com.backend.movie.domain.entities.GenreEntity;
 import com.backend.movie.domain.entities.MovieEntity;
 import com.backend.movie.domain.filter.CatalogueFilter;
@@ -23,15 +24,18 @@ import java.util.stream.Collectors;
 @Service
 public class MovieServiceImpl implements MovieService{
     private final MovieRepository repository;
+    private final ReviewRepository reviewRepository;
     private final GenreRepository genreRepository;
     private final MovieMapper movieMapper;
     public MovieServiceImpl(
             @Autowired MovieRepository movieRepository,
             @Autowired GenreRepository genreRepository,
+            @Autowired ReviewRepository reviewRepository,
             @Autowired MovieMapper movieMapper
             ) {
         this.repository = movieRepository;
         this.genreRepository = genreRepository;
+        this.reviewRepository = reviewRepository;
         this.movieMapper = movieMapper;
     }
     @Override
@@ -41,7 +45,9 @@ public class MovieServiceImpl implements MovieService{
         );
         List<GenreEntity> genres = genreRepository.findAllByMovie(movieId);
         movieEntity.setGenres(genres);
-        return movieMapper.toMovie(movieEntity);
+        Movie movie = movieMapper.toMovie(movieEntity);
+        movie.setRating(reviewRepository.calculateAverageRatingForMovie(movieEntity));
+        return movie;
     }
 
     @Override
@@ -57,11 +63,13 @@ public class MovieServiceImpl implements MovieService{
             }
         }
         List<MovieEntity> movieEntities = repository.findAll(MovieSpecification.withFilter(filter), pageable);
-        //TODO: в будущем добавить подсчет рейтинга для фильма(через sql)
-        //TODO: добавить сортировку
         //TODO: добавить фильтрацию по жанрам
         return movieEntities.stream().map(
-                movieMapper::toMovie
+                movieEntity -> {
+                    Movie movie = movieMapper.toMovie(movieEntity);
+                    movie.setRating(reviewRepository.calculateAverageRatingForMovie(movieEntity));
+                    return movie;
+                }
         ).collect(Collectors.toList());
     }
 
