@@ -14,7 +14,6 @@ import java.util.UUID;
 
 @Repository
 public interface FavouriteRepository extends JpaRepository<Favourites, Long> {
-    List<Favourites> findByUser(UserEntity userEntity);
     @Modifying
     @Query("DELETE FROM Favourites f WHERE f.user=:user AND f.movie=:movie")
     void deleteByUserAndMovie(@Param("user") UserEntity user, @Param("movie") MovieEntity movie);

@@ -11,10 +11,10 @@ import com.backend.movie.domain.requests.EditReviewRequest;
 import com.backend.movie.domain.requests.ReviewRequest;
 import com.backend.movie.helpers.UserContextManager;
 import com.backend.movie.mappers.ReviewMapper;
-import com.backend.movie.mappers.UserMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
 
@@ -59,33 +59,34 @@ public class ReviewServiceImpl implements ReviewService{
     }
 
     @Override
-    public Review editReview(EditReviewRequest request) throws BadRequestException {
-        ReviewEntity reviewEntity = reviewRepository.findById(request.getId()).orElseThrow(
+    public Review editReview(EditReviewRequest request) {
+        ReviewEntity reviewEntity= reviewRepository.findById(request.getId()).orElseThrow(
                 () -> new NotFoundException("Отзыв не найден")
         );
+
         UserEntity currentUser = UserContextManager.getUserFromContext(userRepository);
 
         if(!reviewEntity.getAuthor().equals(currentUser)) {
-            throw new BadRequestException("Вы не можете редактировать чужой комментарий");
+            throw new AccessDeniedException("Вы не можете редактировать чужой отзыв");
         }
+
         reviewEntity.setComment(request.getComment());
         reviewEntity.setRating(request.getRating());
         reviewEntity.setAnonymous(request.isAnonymous());
-
         reviewRepository.save(reviewEntity);
 
         return mapper.toReview(reviewEntity);
     }
 
     @Override
-    public boolean deleteReview(UUID reviewId) throws BadRequestException {
+    public boolean deleteReview(UUID reviewId) {
         ReviewEntity reviewEntity = reviewRepository.findById(reviewId).orElseThrow(
                 () -> new NotFoundException("Отзыв не найден")
         );
         UserEntity currentUser = UserContextManager.getUserFromContext(userRepository);
 
         if(!reviewEntity.getAuthor().equals(currentUser)) {
-            throw new BadRequestException("Вы не можете удалить чужой комментарий");
+            throw new AccessDeniedException("Вы не можете удалить чужой отзыв");
         }
         reviewRepository.delete(reviewEntity);
         return true;

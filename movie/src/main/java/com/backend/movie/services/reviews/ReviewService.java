@@ -11,7 +11,7 @@ import java.util.UUID;
 public interface ReviewService {
     List<Review> getReviews(UUID movieId);
     Review createReview(UUID movieId, ReviewRequest request) throws BadRequestException;
-    Review editReview(EditReviewRequest request) throws BadRequestException;
-    boolean deleteReview(UUID reviewId) throws BadRequestException;
+    Review editReview(EditReviewRequest request);
+    boolean deleteReview(UUID reviewId);
 
 }

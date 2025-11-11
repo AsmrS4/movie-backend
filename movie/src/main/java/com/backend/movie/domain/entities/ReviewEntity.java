@@ -1,9 +1,12 @@
 package com.backend.movie.domain.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.UUID;
 
 @Data
@@ -21,13 +24,28 @@ public class ReviewEntity {
     private LocalDateTime createTime = LocalDateTime.now();
     private boolean isAnonymous;
 
-    // Пользователь, оставивший отзыв
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false)
+    @ToString.Exclude
+    @JsonIgnore
     private UserEntity author;
 
-    // Фильм, к которому написан отзыв
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "movie_id", nullable = false)
+    @ToString.Exclude
+    @JsonIgnore
     private MovieEntity movie;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ReviewEntity)) return false;
+        return Objects.equals(id, ((ReviewEntity) o).id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
 }

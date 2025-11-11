@@ -11,13 +11,12 @@ import com.backend.movie.domain.models.Movie;
 import com.backend.movie.helpers.MovieSpecification;
 import com.backend.movie.mappers.MovieMapper;
 import org.apache.coyote.BadRequestException;
-import org.springframework.data.domain.Pageable;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
 
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 

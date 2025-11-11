@@ -4,8 +4,6 @@ import com.backend.movie.domain.entities.GenreEntity;
 import com.backend.movie.domain.entities.MovieEntity;
 import com.backend.movie.domain.models.Genre;
 import com.backend.movie.domain.models.Movie;
-import com.backend.movie.services.movie.MovieService;
-import com.backend.movie.services.users.UserService;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -15,5 +13,4 @@ public interface MovieMapper {
     @Mapping(source = "genres", target = "genres")
     Movie toMovie(MovieEntity movieEntity);
     Genre toGenre(GenreEntity genreEntity);
-    GenreEntity toGenreEntity(Genre genre);
 }
