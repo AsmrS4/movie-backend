@@ -60,18 +60,19 @@ public class ReviewServiceImpl implements ReviewService{
 
     @Override
     public Review editReview(EditReviewRequest request) {
-        ReviewEntity reviewEntity = reviewRepository.findById(request.getId()).orElseThrow(
+        ReviewEntity reviewEntity= reviewRepository.findById(request.getId()).orElseThrow(
                 () -> new NotFoundException("Отзыв не найден")
         );
+
         UserEntity currentUser = UserContextManager.getUserFromContext(userRepository);
 
         if(!reviewEntity.getAuthor().equals(currentUser)) {
             throw new AccessDeniedException("Вы не можете редактировать чужой отзыв");
         }
+
         reviewEntity.setComment(request.getComment());
         reviewEntity.setRating(request.getRating());
         reviewEntity.setAnonymous(request.isAnonymous());
-
         reviewRepository.save(reviewEntity);
 
         return mapper.toReview(reviewEntity);

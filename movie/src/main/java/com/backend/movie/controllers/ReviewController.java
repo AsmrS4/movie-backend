@@ -7,6 +7,7 @@ import com.backend.movie.services.reviews.ReviewService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -36,7 +37,7 @@ public class ReviewController {
             description = "В ответе возвращается новый отзыв пользователя."
     )
     @PostMapping("/{movieId}")
-    public ResponseEntity<?> createReview(@PathVariable UUID movieId, @RequestBody ReviewRequest request) throws BadRequestException {
+    public ResponseEntity<?> createReview(@PathVariable UUID movieId, @RequestBody @Valid ReviewRequest request) throws BadRequestException {
         return ResponseEntity.ok(reviewService.createReview(movieId, request));
     }
     @Operation(
@@ -44,7 +45,7 @@ public class ReviewController {
             description = "В ответе возвращается измененный отзыв."
     )
     @PutMapping("/{movieId}")
-    public ResponseEntity<?> editReview(@PathVariable UUID movieId, @RequestBody EditReviewRequest request) {
+    public ResponseEntity<?> editReview(@PathVariable UUID movieId, @RequestBody @Valid EditReviewRequest request) {
         return ResponseEntity.ok(reviewService.editReview(request));
     }
     @Operation(
