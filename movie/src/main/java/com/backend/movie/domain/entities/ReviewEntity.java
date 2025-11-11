@@ -21,12 +21,10 @@ public class ReviewEntity {
     private LocalDateTime createTime = LocalDateTime.now();
     private boolean isAnonymous;
 
-    // Пользователь, оставивший отзыв
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity author;
 
-    // Фильм, к которому написан отзыв
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "movie_id", nullable = false)
     private MovieEntity movie;

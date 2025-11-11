@@ -1,12 +1,10 @@
 package com.backend.movie.controllers;
 
-import com.backend.movie.domain.enums.SortType;
 import com.backend.movie.domain.filter.CatalogueFilter;
 import com.backend.movie.services.movie.MovieService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.Positive;
 import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -37,11 +35,10 @@ public class MovieController {
             @RequestParam(required = false) @Validated @Min(value = 1 , message = "Минимальное значение 1") Integer maxYear,
             @RequestParam(required = false) @Validated @Min(value = 0 , message = "Значение должно быть положительным") Integer minAgeLimit,
             @RequestParam(required = false) @Validated @Min(value = 0 , message = "Значение должно быть положительным") Integer maxAgeLimit,
-            @RequestParam(required = false) SortType sortBy,
             @RequestParam(required = false, defaultValue = "1") @Validated @Min(value = 1 , message = "Минимальное значение 1") int page,
             @RequestParam(required = false, defaultValue = "10") @Validated @Min(value = 1 , message = "Минимальное значение 1") int size
             ) throws BadRequestException {
-        CatalogueFilter filter = new CatalogueFilter(search, minYear, maxYear, minAgeLimit, maxAgeLimit, sortBy);
+        CatalogueFilter filter = new CatalogueFilter(search, minYear, maxYear, minAgeLimit, maxAgeLimit);
         Pageable pageable = PageRequest.of(--page, size);
         return ResponseEntity.ok(movieService.getCatalogue(filter, pageable));
     }
@@ -54,6 +51,10 @@ public class MovieController {
     public ResponseEntity<?> getMovieDetails(@PathVariable UUID movieId) {
         return ResponseEntity.ok(movieService.getMovieDetails(movieId));
     }
+    @Operation(
+            summary = "Получить список доступных жанров",
+            description = "В ответе возвращается список жанров фильмов, существующих в системе."
+    )
     @GetMapping("/catalogue/genres")
     public ResponseEntity<?> getGenres() {
         return ResponseEntity.ok(movieService.getAvailableMovieGenres());

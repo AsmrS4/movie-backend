@@ -44,7 +44,7 @@ public class ReviewController {
             description = "В ответе возвращается измененный отзыв."
     )
     @PutMapping("/{movieId}")
-    public ResponseEntity<?> editReview(@PathVariable UUID movieId, @RequestBody EditReviewRequest request) throws BadRequestException {
+    public ResponseEntity<?> editReview(@PathVariable UUID movieId, @RequestBody EditReviewRequest request) {
         return ResponseEntity.ok(reviewService.editReview(request));
     }
     @Operation(
@@ -52,7 +52,7 @@ public class ReviewController {
             description = "В ответе возвращается статус с кодом операции."
     )
     @DeleteMapping("/{reviewId}")
-    public ResponseEntity<?> deleteReview(@PathVariable UUID reviewId) throws BadRequestException {
+    public ResponseEntity<?> deleteReview(@PathVariable UUID reviewId) {
         return ResponseEntity.ok(reviewService.deleteReview(reviewId));
     }
 }

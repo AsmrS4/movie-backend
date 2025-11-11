@@ -1,6 +1,5 @@
 package com.backend.movie.domain.filter;
 
-import com.backend.movie.domain.enums.SortType;
 import jakarta.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,5 +17,4 @@ public class CatalogueFilter {
     private Integer minAgeLimit;
     @Nullable
     private Integer maxAgeLimit;
-    private SortType sortBy;
 }

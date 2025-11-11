@@ -5,19 +5,14 @@ import com.backend.movie.domain.entities.UserEntity;
 import com.backend.movie.domain.models.User;
 import com.backend.movie.domain.requests.EditProfileRequest;
 import com.backend.movie.domain.requests.PasswordChangeRequest;
-import com.backend.movie.domain.requests.RegisterRequest;
-import com.backend.movie.exceptions.UnauthorizedException;
 import com.backend.movie.helpers.UserContextManager;
 import com.backend.movie.mappers.UserMapper;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.BadRequestException;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -30,7 +25,6 @@ public class UserServiceImpl implements UserService{
         UserEntity userEntity = UserContextManager.getUserFromContext(userRepository);
         return mapper.toUser(userEntity);
     }
-
     @Override
     public User editUserProfile( EditProfileRequest request) throws BadRequestException {
         UserEntity userEntity = UserContextManager.getUserFromContext(userRepository);
@@ -64,16 +58,6 @@ public class UserServiceImpl implements UserService{
         userRepository.save(userEntity);
         return true;
     }
-    @Override
-    public UserEntity save(RegisterRequest request) throws BadRequestException {
-        if(existByLogin(request.getLogin())) {
-            throw new BadRequestException("Логин занят");
-        }
-        UserEntity newUser = mapper.toUserEntity(request);
-        return userRepository.save(newUser);
-    }
-
-
     private UserEntity saveUser(UserEntity userEntity) {
         return userRepository.save(userEntity);
     }
