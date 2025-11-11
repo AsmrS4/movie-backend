@@ -1,5 +1,6 @@
 package com.backend.movie.config;
 
+import com.backend.movie.handler.AuthenticationEntryPointImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,7 +28,7 @@ public class SecurityConfiguration {
     }
     @Bean
     public AuthenticationEntryPoint authenticationEntryPoint() {
-        return null;
+        return new AuthenticationEntryPointImpl();
     }
 
     @Bean
