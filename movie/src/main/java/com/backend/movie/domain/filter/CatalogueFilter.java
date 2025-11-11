@@ -1,18 +1,20 @@
 package com.backend.movie.domain.filter;
 
-import com.backend.movie.domain.enums.SortType;
+import jakarta.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
 @AllArgsConstructor
 public class CatalogueFilter {
+    @Nullable
     private String search;
-    private String director;
-    private String country;
-    private int minYear;
-    private int maxYear;
-    private int minAgeLimit;
-    private int maxAgeLimit;
-    private SortType sortBy;
+    @Nullable
+    private Integer minYear;
+    @Nullable
+    private Integer maxYear;
+    @Nullable
+    private Integer minAgeLimit;
+    @Nullable
+    private Integer maxAgeLimit;
 }

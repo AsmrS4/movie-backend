@@ -7,7 +7,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Data
@@ -26,11 +26,11 @@ public class UserEntity implements UserDetails {
     private String imageUrl;
     private String password;
     private LocalDateTime createTime = LocalDateTime.now();
+
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private RefreshTokenEntity refreshToken;
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<TokenEntity> tokens;
-
+    @OneToMany(mappedBy="user", cascade={CascadeType.ALL}, orphanRemoval=true)
+    private Set<Favourites> favorites;
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return null;

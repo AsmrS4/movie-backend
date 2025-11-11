@@ -6,11 +6,12 @@ import io.swagger.v3.oas.annotations.Hidden;
 import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.webjars.NotFoundException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -58,4 +59,19 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(NotFoundException.class)
+    ResponseEntity<Map<String, Object>> handleNotFoundException(NotFoundException ex) {
+        Map<String, Object> errors = new HashMap<>();
+        errors.put("status: ", HttpStatus.NOT_FOUND.value());
+        errors.put("error: ", ex.getMessage());
+        return new ResponseEntity<>(errors, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    ResponseEntity<Map<String, Object>> handleAccessDeniedException(AccessDeniedException ex) {
+        Map<String, Object> errors = new HashMap<>();
+        errors.put("status: ", HttpStatus.FORBIDDEN.value());
+        errors.put("error: ", ex.getMessage());
+        return new ResponseEntity<>(errors, HttpStatus.FORBIDDEN);
+    }
 }
