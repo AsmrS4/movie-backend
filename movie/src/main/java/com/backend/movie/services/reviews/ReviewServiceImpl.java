@@ -63,10 +63,7 @@ public class ReviewServiceImpl implements ReviewService{
         ReviewEntity reviewEntity= reviewRepository.findById(request.getId()).orElseThrow(
                 () -> new NotFoundException("Отзыв не найден")
         );
-
-        UserEntity currentUser = UserContextManager.getUserFromContext(userRepository);
-
-        if(!reviewEntity.getAuthor().equals(currentUser)) {
+        if(!isAuthorOfReview(reviewEntity)) {
             throw new AccessDeniedException("Вы не можете редактировать чужой отзыв");
         }
 
@@ -83,12 +80,15 @@ public class ReviewServiceImpl implements ReviewService{
         ReviewEntity reviewEntity = reviewRepository.findById(reviewId).orElseThrow(
                 () -> new NotFoundException("Отзыв не найден")
         );
-        UserEntity currentUser = UserContextManager.getUserFromContext(userRepository);
-
-        if(!reviewEntity.getAuthor().equals(currentUser)) {
+        if(!isAuthorOfReview(reviewEntity)) {
             throw new AccessDeniedException("Вы не можете удалить чужой отзыв");
         }
         reviewRepository.delete(reviewEntity);
         return true;
+    }
+
+    private boolean isAuthorOfReview(ReviewEntity review) {
+        UserEntity currentUser = UserContextManager.getUserFromContext(userRepository);
+        return review.getAuthor().equals(currentUser);
     }
 }
