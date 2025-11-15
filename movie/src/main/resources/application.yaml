@@ -26,3 +26,5 @@ jwt:
   secret: hits2025hits2025hits2025hits2025hits2025hits2025hits2025hits
   access-lifetime: 15m
   refresh-lifetime: 7d
+
+# знаю, что нельзя указывать секретную информацию в конфиг файле, но мне просто было лень настраивать переменные окружения :D
