@@ -2,16 +2,21 @@ package com.backend.movie.services.movie;
 
 import com.backend.movie.dao.GenreRepository;
 import com.backend.movie.dao.MovieRepository;
+import com.backend.movie.dao.PageableMovieRepository;
 import com.backend.movie.dao.ReviewRepository;
 import com.backend.movie.domain.entities.GenreEntity;
 import com.backend.movie.domain.entities.MovieEntity;
 import com.backend.movie.domain.filter.CatalogueFilter;
 import com.backend.movie.domain.models.Genre;
 import com.backend.movie.domain.models.Movie;
+import com.backend.movie.domain.response.MoviePaginatedRequest;
+import com.backend.movie.domain.response.Pagination;
 import com.backend.movie.helpers.MovieSpecification;
 import com.backend.movie.mappers.MovieMapper;
+import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.apache.coyote.BadRequestException;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
@@ -21,22 +26,13 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class MovieServiceImpl implements MovieService{
     private final MovieRepository repository;
+    private final PageableMovieRepository pageableMovieRepository;
     private final ReviewRepository reviewRepository;
     private final GenreRepository genreRepository;
     private final MovieMapper movieMapper;
-    public MovieServiceImpl(
-            @Autowired MovieRepository movieRepository,
-            @Autowired GenreRepository genreRepository,
-            @Autowired ReviewRepository reviewRepository,
-            @Autowired MovieMapper movieMapper
-            ) {
-        this.repository = movieRepository;
-        this.genreRepository = genreRepository;
-        this.reviewRepository = reviewRepository;
-        this.movieMapper = movieMapper;
-    }
     @Override
     public Movie getMovieDetails(UUID movieId) {
         MovieEntity movieEntity = repository.findById(movieId).orElseThrow(
@@ -50,7 +46,7 @@ public class MovieServiceImpl implements MovieService{
     }
 
     @Override
-    public List<Movie> getCatalogue(CatalogueFilter filter, Pageable pageable) throws BadRequestException {
+    public MoviePaginatedRequest getCatalogue(CatalogueFilter filter, Pageable pageable) throws BadRequestException {
         if(filter.getMinYear()!=null && filter.getMaxYear()!=null) {
             if(filter.getMinYear() > filter.getMaxYear()) {
                 throw new BadRequestException("Минимальное значение года выпуска не должно быть выше максимального");
@@ -61,15 +57,23 @@ public class MovieServiceImpl implements MovieService{
                 throw new BadRequestException("Минимальное значение возраста не должно быть выше максимального");
             }
         }
-        List<MovieEntity> movieEntities = repository.findAll(MovieSpecification.withFilter(filter), pageable);
-        //TODO: добавить фильтрацию по жанрам
-        return movieEntities.stream().map(
-                movieEntity -> {
-                    Movie movie = movieMapper.toMovie(movieEntity);
-                    movie.setRating(reviewRepository.calculateAverageRatingForMovie(movieEntity));
-                    return movie;
+        if(filter.getGenres()!=null && !filter.getGenres().isEmpty()) {
+            filter.getGenres().stream().map(genre -> {
+                if(!genreRepository.existsById(genre)) {
+                    throw new EntityNotFoundException("Указанный жанр не найден");
                 }
-        ).collect(Collectors.toList());
+                return null;
+            }).close();
+        }
+        Page<MovieEntity> pageableMovieEntities = pageableMovieRepository.findAll(MovieSpecification.withFilter(filter), pageable);
+        List<Movie> mappedMovies = toMovies(pageableMovieEntities);
+        Pagination pagination = toPagination(pageableMovieEntities);
+
+        return MoviePaginatedRequest.builder()
+                .movies(mappedMovies)
+                .pagination(pagination)
+                .build();
+
     }
 
     @Override
@@ -78,4 +82,20 @@ public class MovieServiceImpl implements MovieService{
         return genres.stream().map(movieMapper::toGenre).collect(Collectors.toList());
     }
 
+    private Pagination toPagination(Page<?> pageableResponse) {
+        return Pagination.builder()
+                .current(pageableResponse.getNumber() + 1)
+                .count(pageableResponse.getTotalPages())
+                .size(pageableResponse.getSize())
+                .build();
+    }
+    private List<Movie> toMovies(Page<MovieEntity> content) {
+        return content.getContent().stream().map(
+                movieEntity -> {
+                    Movie movie = movieMapper.toMovie(movieEntity);
+                    movie.setRating(reviewRepository.calculateAverageRatingForMovie(movieEntity));
+                    return movie;
+                }
+        ).toList();
+    }
 }
