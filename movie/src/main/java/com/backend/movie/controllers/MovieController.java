@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -35,10 +36,11 @@ public class MovieController {
             @RequestParam(required = false) @Validated @Min(value = 1 , message = "Минимальное значение 1") Integer maxYear,
             @RequestParam(required = false) @Validated @Min(value = 0 , message = "Значение должно быть положительным") Integer minAgeLimit,
             @RequestParam(required = false) @Validated @Min(value = 0 , message = "Значение должно быть положительным") Integer maxAgeLimit,
+            @RequestParam(required = false) @Validated List<UUID> genres,
             @RequestParam(required = false, defaultValue = "1") @Validated @Min(value = 1 , message = "Минимальное значение 1") int page,
             @RequestParam(required = false, defaultValue = "10") @Validated @Min(value = 1 , message = "Минимальное значение 1") int size
             ) throws BadRequestException {
-        CatalogueFilter filter = new CatalogueFilter(search, minYear, maxYear, minAgeLimit, maxAgeLimit);
+        CatalogueFilter filter = new CatalogueFilter(search, minYear, maxYear, minAgeLimit, maxAgeLimit, genres);
         Pageable pageable = PageRequest.of(--page, size);
         return ResponseEntity.ok(movieService.getCatalogue(filter, pageable));
     }

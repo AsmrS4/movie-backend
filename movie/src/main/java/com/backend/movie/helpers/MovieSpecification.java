@@ -2,6 +2,8 @@ package com.backend.movie.helpers;
 
 import com.backend.movie.domain.entities.MovieEntity;
 import com.backend.movie.domain.filter.CatalogueFilter;
+import com.backend.movie.domain.models.Genre;
+import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
@@ -43,6 +45,10 @@ public class MovieSpecification {
                         root.get("ageLimit"),
                         filter.getMaxAgeLimit()
                 ));
+            }
+            if(filter.getGenres()!= null && !filter.getGenres().isEmpty()) {
+                Join<MovieEntity, Genre> genreJoin = root.join("genres");
+                predicates.add(genreJoin.get("id").in(filter.getGenres()));
             }
             query.orderBy(criteriaBuilder.desc(root.get("filmYear")));
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
