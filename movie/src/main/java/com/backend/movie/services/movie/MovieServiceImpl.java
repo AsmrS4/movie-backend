@@ -13,17 +13,15 @@ import com.backend.movie.domain.response.MoviePaginatedRequest;
 import com.backend.movie.domain.response.Pagination;
 import com.backend.movie.helpers.MovieSpecification;
 import com.backend.movie.mappers.MovieMapper;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.BadRequestException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -59,10 +57,18 @@ public class MovieServiceImpl implements MovieService{
                 throw new BadRequestException("Минимальное значение возраста не должно быть выше максимального");
             }
         }
+        if(filter.getGenres()!=null && !filter.getGenres().isEmpty()) {
+            filter.getGenres().stream().map(genre -> {
+                if(!genreRepository.existsById(genre)) {
+                    throw new EntityNotFoundException("Указанный жанр не найден");
+                }
+                return null;
+            }).close();
+        }
         Page<MovieEntity> pageableMovieEntities = pageableMovieRepository.findAll(MovieSpecification.withFilter(filter), pageable);
         List<Movie> mappedMovies = toMovies(pageableMovieEntities);
         Pagination pagination = toPagination(pageableMovieEntities);
-        //TODO: добавить фильтрацию по жанрам
+
         return MoviePaginatedRequest.builder()
                 .movies(mappedMovies)
                 .pagination(pagination)

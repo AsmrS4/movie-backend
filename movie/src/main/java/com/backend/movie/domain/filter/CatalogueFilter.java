@@ -4,6 +4,9 @@ import jakarta.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.util.List;
+import java.util.UUID;
+
 @Data
 @AllArgsConstructor
 public class CatalogueFilter {
@@ -17,4 +20,6 @@ public class CatalogueFilter {
     private Integer minAgeLimit;
     @Nullable
     private Integer maxAgeLimit;
+    @Nullable
+    private List<UUID> genres;
 }

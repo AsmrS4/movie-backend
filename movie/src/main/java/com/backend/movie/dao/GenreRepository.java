@@ -13,4 +13,5 @@ import java.util.UUID;
 public interface GenreRepository extends JpaRepository<GenreEntity, UUID> {
     @Query("SELECT g FROM MovieEntity m JOIN m.genres g WHERE m.movieId=:movieId")
     List<GenreEntity> findAllByMovie(@Param("movieId") UUID movieId);
+
 }
