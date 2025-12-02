@@ -1,0 +1,36 @@
+version: '3.9'
+services:
+  app:
+    image: 'h4ckass/movie-backend-image:latest'
+    container_name: 'movie-backend'
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/movie_db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+    ports:
+      - '8080:8080'
+    networks:
+      - app_network
+    depends_on:
+      - db
+  db:
+    image: 'postgres:15'
+    container_name: 'movie-database'
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=movie_db
+      - POSTGRES_PORT=5432
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - '5432:5432'
+    networks:
+      - app_network
+
+volumes:
+  db_data:
+
+networks:
+  app_network:
+    driver: bridge
