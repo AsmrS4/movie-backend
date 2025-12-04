@@ -4,6 +4,7 @@ import com.backend.movie.handler.AuthenticationEntryPointImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -52,6 +53,7 @@ public class SecurityConfiguration {
                                 "/swagger-ui.html")
                         .permitAll()
                         .requestMatchers("/api/auth/*", "/api/movie/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/reviews/*").permitAll()
                         .requestMatchers(
                                 "/api/auth/logout",
                                 "/api/user/*",

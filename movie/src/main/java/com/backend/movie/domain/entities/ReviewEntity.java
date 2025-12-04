@@ -18,7 +18,7 @@ public class ReviewEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
-
+    @Column(columnDefinition = "VARCHAR(2000)")
     private String comment;
     private int rating;
     private LocalDateTime createTime = LocalDateTime.now();
