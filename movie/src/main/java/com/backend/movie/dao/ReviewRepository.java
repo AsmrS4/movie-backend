@@ -13,6 +13,6 @@ import java.util.UUID;
 @Repository
 public interface ReviewRepository extends JpaRepository<ReviewEntity, UUID> {
     List<ReviewEntity> findAllByMovie(MovieEntity movie);
-    @Query("SELECT COALESCE(AVG(re.rating), 0) FROM ReviewEntity re WHERE re.movie=:movie")
+    @Query("SELECT COALESCE(AVG(re.rating), 0) FROM ReviewEntity re WHERE re.movie=:movie ORDER BY re.createTime DESC")
     double calculateAverageRatingForMovie(@Param("movie") MovieEntity movie);
 }
