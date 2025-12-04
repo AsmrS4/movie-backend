@@ -1,7 +1,7 @@
 version: '3.9'
 services:
   app:
-    image: 'h4ckass/movie-backend-image:latest'
+    image: 'b0nhart/movie-backend-image:latest'
     container_name: 'movie-backend'
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/movie_db
